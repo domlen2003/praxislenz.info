@@ -17,7 +17,7 @@ func main() {
 
 	//Routing
 	r := mux.NewRouter()
-	handlers.AddAdminRouter(r.PathPrefix("/admin").Subrouter())
+	handlers.AddAdminRouter(r.PathPrefix("/admin").Subrouter(), tpl)
 	r.HandleFunc("/", indexHandler).Methods("GET")
 	r.NotFoundHandler = r.NewRoute().HandlerFunc(http.NotFound).GetHandler()
 
