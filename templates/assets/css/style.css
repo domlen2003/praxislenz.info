@@ -1,8 +1,7 @@
 .header {
     height: 35vh;
-    background-image: url("../img/header.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
+    background: rgb(5,0,87);
+    background: linear-gradient(128deg, rgba(5,0,87,1) 0%, rgba(9,9,121,1) 26%, rgba(130,0,255,1) 100%);
 }
 
 .header-logo {
