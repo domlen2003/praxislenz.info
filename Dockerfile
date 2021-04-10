@@ -1,10 +1,11 @@
 FROM golang:alpine
 
+RUN mkdir /app
+ADD . /app
 WORKDIR /app
 
-COPY . .
+RUN go clean --modcache
 
-RUN go install
 RUN go build -o ./server main.go
 
 EXPOSE 8080

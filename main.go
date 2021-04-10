@@ -28,7 +28,7 @@ func main() {
 
 	//Server
 	//err :=http.Serve(autocert.NewListener("domain.com"), nil)
-	err := http.ListenAndServe(":80", nil)
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal("Server: ", err)
 	}
