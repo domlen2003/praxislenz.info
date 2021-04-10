@@ -23,7 +23,7 @@
 }
 
 .photo-card {
-    background-color: #2d3638;
+    background-color: #e7e5ff;
     border-radius: 10px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
     display: flex;
@@ -69,7 +69,7 @@
 }
 
 .photo-details h1, .photo-details h4 {
-    color: #fff;
+    color: #010014;
     font-weight: 500;
     margin: 0;
 }
@@ -97,7 +97,7 @@
 .photo-tags a {
     background-color: #191e20;
     border-radius: 50px;
-    color: #fff;
+    color: #010014;
     display: block;
     padding: 0.3125em 1.25em;
     text-decoration: none;
@@ -109,5 +109,5 @@
 }
 
 .photo-details p {
-    color: white;
+    color: #010014;
 }
