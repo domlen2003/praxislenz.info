@@ -35,7 +35,8 @@ func main() {
 }
 
 type IndexContent struct {
-	Title string
+	Title   string
+	Message string
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
