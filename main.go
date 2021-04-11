@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"praxislenz.info/handlers"
 	"praxislenz.info/middleware"
-	"time"
 )
 
 var tpl *template.Template
@@ -28,12 +27,10 @@ func main() {
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
 	// serve HTTPS!
-	srv := &http.Server{
-		Addr:         ":8080",
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+	err := http.ListenAndServeTLS(":8080", "pem.cert", "pem.key", nil)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
 	}
-	log.Println(srv.ListenAndServeTLS("pem.cert", "pem.key"))
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
