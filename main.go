@@ -33,7 +33,7 @@ func main() {
 		Cache:  autocert.DirCache("certs"),
 	}
 	server := &http.Server{
-		Addr:    "praxislenz.info:443",
+		Addr:    ":443",
 		Handler: r,
 		TLSConfig: &tls.Config{
 			GetCertificate: certManager.GetCertificate,
