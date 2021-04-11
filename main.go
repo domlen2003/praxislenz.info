@@ -33,7 +33,7 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	log.Println(srv.ListenAndServe())
+	log.Println(srv.ListenAndServeTLS("pem.cert", "pem.key"))
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
