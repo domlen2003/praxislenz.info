@@ -25,8 +25,22 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	_, ok := session.Values["username"]
 	if !ok {
 		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		r.ParseForm()
+		if len(r.FormValue("title")) > 0 && len(r.FormValue("content")) > 0 {
+			fmt.Println(r.FormValue("title"))
+			fmt.Println(r.FormValue("content"))
+			tpl.ExecuteTemplate(w, "settings.gohtml", nil)
+		} else {
+			data := struct {
+				CurrentTitle   string
+				CurrentContent string
+			}{"Corona Info",
+				"Aktuell blah blah übrig",
+			}
+			tpl.ExecuteTemplate(w, "settings.gohtml", data)
+		}
 	}
-	fmt.Fprint(w, "Settings Page")
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +48,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, r.URL.Path+"/login", http.StatusPermanentRedirect)
 }
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
+func loginHandler(w http.ResponseWriter, _ *http.Request) {
 	//Show Form for Login
 	tpl.ExecuteTemplate(w, "login.gohtml", nil)
 }

@@ -1,10 +1,11 @@
 package main
 
 import (
+	"crypto/tls"
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
+	"golang.org/x/crypto/acme/autocert"
 	"html/template"
-	"log"
 	"net/http"
 	"praxislenz.info/handlers"
 	"praxislenz.info/middleware"
@@ -26,12 +27,28 @@ func main() {
 	http.Handle("/", errorChain.Then(r))
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
+	certManager := autocert.Manager{
+		Prompt: autocert.AcceptTOS,
+		Cache:  autocert.DirCache("certs"),
+	}
+	autocert.HostWhitelist("praxislenz.info")
+
+	server := &http.Server{
+		Addr:    ":443",
+		Handler: r,
+		TLSConfig: &tls.Config{
+			GetCertificate: certManager.GetCertificate,
+		},
+	}
+
+	go http.ListenAndServe(":80", certManager.HTTPHandler(nil))
+	server.ListenAndServeTLS("", "")
 	//Server
 	//err :=http.Serve(autocert.NewListener("domain.com"), nil)
-	err := http.ListenAndServe(":8080", nil)
+	/*err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal("Server: ", err)
-	}
+	}*/
 }
 
 type IndexContent struct {
