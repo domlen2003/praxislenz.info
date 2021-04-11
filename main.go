@@ -6,6 +6,7 @@ import (
 	"github.com/justinas/alice"
 	"golang.org/x/crypto/acme/autocert"
 	"html/template"
+	"log"
 	"net/http"
 	"praxislenz.info/handlers"
 	"praxislenz.info/middleware"
@@ -24,8 +25,8 @@ func main() {
 
 	//Middleware
 	errorChain := alice.New(middleware.LoggerHandler, middleware.RecoverHandler)
-	r.Handle("/", errorChain.Then(r))
-	r.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
+	http.Handle("/", errorChain.Then(r))
+	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
 	certManager := autocert.Manager{
 		Prompt: autocert.AcceptTOS,
@@ -39,14 +40,15 @@ func main() {
 		},
 	}
 
-	go http.ListenAndServe(":80", certManager.HTTPHandler(nil))
-	server.ListenAndServeTLS("", "")
-	//Server
-	//err :=http.Serve(autocert.NewListener("domain.com"), nil)
-	/*err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		log.Fatal("Server: ", err)
-	}*/
+	go func() {
+		// serve HTTP, which will redirect automatically to HTTPS
+		h := certManager.HTTPHandler(nil)
+		log.Fatal(http.ListenAndServe(":http", h))
+	}()
+
+	// serve HTTPS!
+	log.Fatal(server.ListenAndServeTLS("", ""))
+	//err := http.ListenAndServe(":8080", nil)
 }
 
 type IndexContent struct {
