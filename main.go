@@ -24,15 +24,13 @@ func main() {
 
 	//Middleware
 	errorChain := alice.New(middleware.LoggerHandler, middleware.RecoverHandler)
-	http.Handle("/", errorChain.Then(r))
-	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
+	r.Handle("/", errorChain.Then(r))
+	r.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
 	certManager := autocert.Manager{
 		Prompt: autocert.AcceptTOS,
 		Cache:  autocert.DirCache("certs"),
 	}
-	autocert.HostWhitelist("praxislenz.info")
-
 	server := &http.Server{
 		Addr:    ":443",
 		Handler: r,
