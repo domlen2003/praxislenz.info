@@ -27,12 +27,15 @@ func main() {
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
 	// serve HTTPS!
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServeTLS(":8080", "", "", nil)
 	if err != nil {
-		log.Fatal("Server: ", err)
+		log.Fatal("ListenAndServe: ", err)
 	}
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
-	tpl.ExecuteTemplate(w, "index.gohtml", nil)
+	err := tpl.ExecuteTemplate(w, "index.gohtml", nil)
+	if err != nil {
+		log.Fatal("Index: ", err)
+	}
 }

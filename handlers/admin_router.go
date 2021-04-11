@@ -26,18 +26,18 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
+		data := struct {
+			CurrentTitle   string
+			CurrentContent string
+		}{"Corona Info",
+			"Aktuell blah blah übrig",
+		}
 		r.ParseForm()
 		if len(r.FormValue("title")) > 0 && len(r.FormValue("content")) > 0 {
 			fmt.Println(r.FormValue("title"))
 			fmt.Println(r.FormValue("content"))
-			tpl.ExecuteTemplate(w, "settings.gohtml", nil)
+			tpl.ExecuteTemplate(w, "settings.gohtml", data)
 		} else {
-			data := struct {
-				CurrentTitle   string
-				CurrentContent string
-			}{"Corona Info",
-				"Aktuell blah blah übrig",
-			}
 			tpl.ExecuteTemplate(w, "settings.gohtml", data)
 		}
 	}
