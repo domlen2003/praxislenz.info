@@ -27,7 +27,7 @@ func main() {
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
 	// serve HTTPS!
-	err := http.ListenAndServeTLS(":8080", "pem.cert", "pem.key", nil)
+	err := http.ListenAndServeTLS(":8080", ".pem", ".key", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
