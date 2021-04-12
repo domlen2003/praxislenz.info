@@ -57,6 +57,7 @@ type IndexContent struct {
 	CoronaTimestamp string
 }
 
+//indexHandler renders the index of the page with the according information from mongodb/cache
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	cinfo := handlers.GetInfo(handlers.CoronaInfo)[0]
 	data := IndexContent{cinfo.Content, cinfo.Timestamp}
