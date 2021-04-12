@@ -26,8 +26,8 @@ type InfoNode struct {
 type Infotype string
 
 const (
-	CoronaInfo  Infotype = "cinfo"
-	GeneralInfo Infotype = "ginfo"
+	CoronaInfo  Infotype = "Corona Info"
+	GeneralInfo Infotype = "Generelle Info"
 )
 
 func StartMongoHandler() {
@@ -89,10 +89,27 @@ func GetInfo(itype Infotype) []InfoNode {
 		if err = infoCursor.All(ctx, &infoNodes); err != nil {
 			log.Fatal(err)
 		}
-		//Write the Values to the Cache and revalidate the cache for the specific Infotype
-		cacheValid[itype] = true
-		cache[itype] = infoNodes
-		return infoNodes
+		//In case of not instantiated values for this Infotype
+		//a new Value of this Infotype gets stored
+		//and the Info request gets repeated
+		if len(infoNodes) < 1 {
+			dummyInfo := InfoNode{
+				ID:        primitive.ObjectID{},
+				Type:      itype,
+				Content:   " ",
+				Timestamp: time.Now().Format("2.1.2006 15:04"),
+			}
+			_, err := infos.InsertOne(ctx, infos)
+			if err != nil {
+				log.Fatal("UpdateInfo: ", err)
+			}
+			return []InfoNode{dummyInfo}
+		} else {
+			//Write the Values to the Cache and revalidate the cache for the specific Infotype
+			cacheValid[itype] = true
+			cache[itype] = infoNodes
+			return infoNodes
+		}
 	}
 }
 
