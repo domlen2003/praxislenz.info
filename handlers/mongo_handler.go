@@ -14,75 +14,96 @@ import (
 )
 
 var mongoClient *mongo.Client
+var cacheValid = make(map[Infotype]bool)
+var cache = make(map[Infotype][]InfoNode)
 
 type InfoNode struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	Type      Infotypes          `bson:"type,omitempty"`
+	Type      Infotype           `bson:"type,omitempty"`
 	Content   string             `bson:"content,omitempty"`
 	Timestamp string             `bson:"timestamp,omitempty"`
 }
+type Infotype string
 
-func TestConnection() {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://praxislenz:"+url.QueryEscape(os.Getenv("MONGO_PASSWORD"))+"@202.61.250.84:42069/?authSource=praxislenz"))
-	if err != nil {
-		log.Fatal("ClientConnect: ", err)
-	}
-	defer client.Disconnect(ctx)
+const (
+	CoronaInfo  Infotype = "cinfo"
+	GeneralInfo Infotype = "ginfo"
+)
+
+func StartMongoHandler() {
+	//Cache Invalidator invalidiert den cache alle 10 Minuten,
+	//falls durch äußeren Eingriff der Cache nicht mehr gültig sein sollte
+	go func() {
+		for true {
+			for key, _ := range cacheValid {
+				cacheValid[key] = false
+			}
+			fmt.Println("Cache invalidated")
+			time.Sleep(10 * time.Minute)
+		}
+	}()
 }
 
 func UpdateInfo(info InfoNode) {
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://praxislenz:"+url.QueryEscape(os.Getenv("MONGO_PASSWORD"))+"@202.61.250.84:42069/?authSource=praxislenz"))
-	if err != nil {
-		log.Fatal("ClientConnect: ", err)
+	//Delete all occurrences of this specific type
+	toDelete := GetInfo(info.Type)
+	for _, element := range toDelete {
+		deleteInfo(element.ID)
 	}
-	defer client.Disconnect(ctx)
-
-	db := client.Database("praxislenz")
-	infos := db.Collection("website-infos")
-
-	result, err := infos.InsertOne(ctx, info)
+	//Get the Website-Info Collection
+	infos, ctx := getInfoCollection()
+	//Insert the new Value
+	_, err := infos.InsertOne(ctx, info)
 	if err != nil {
 		log.Fatal("UpdateInfo: ", err)
 	}
-	fmt.Println(result.InsertedID)
+	//Invalidate cache for the updated type
+	delete(cache, info.Type)
+	cacheValid[info.Type] = false
 }
 
-func GetInfo() {
+func deleteInfo(id primitive.ObjectID) {
+	//Get the Website-Info Collection
+	infos, ctx := getInfoCollection()
+	//Delete the given ID
+	_, err := infos.DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func GetInfo(itype Infotype) []InfoNode {
+	//Check if the cache has been invalidated by an Update-Info
+	if cacheValid[itype] {
+		//return the cache for the given type if cache is valid
+		return cache[itype]
+	} else {
+		//Get the Website-Info Collection
+		infos, ctx := getInfoCollection()
+		//Search for the Infotype and return all occurrences
+		var infoNodes []InfoNode
+		infoCursor, err := infos.Find(ctx, bson.M{"type": itype})
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err = infoCursor.All(ctx, &infoNodes); err != nil {
+			log.Fatal(err)
+		}
+		//Write the Values to the Cache and revalidate the cache for the specific Infotype
+		cacheValid[itype] = true
+		cache[itype] = infoNodes
+		return infoNodes
+	}
+}
+
+//returns a short lived connection to the Website-Infos Collection
+func getInfoCollection() (*mongo.Collection, context.Context) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://praxislenz:"+url.QueryEscape(os.Getenv("MONGO_PASSWORD"))+"@202.61.250.84:42069/?authSource=praxislenz"))
 	if err != nil {
 		log.Fatal("ClientConnect: ", err)
 	}
-	defer client.Disconnect(ctx)
 
 	db := client.Database("praxislenz")
-	infos := db.Collection("website-infos")
-
-	var infoNodes []InfoNode
-	infoCursor, err := infos.Find(ctx, bson.M{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err = infoCursor.All(ctx, &infoNodes); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(infoNodes)
-}
-
-//Idiomatic enum implementation for infotypes
-type infotype string
-
-const (
-	CoronaInfo  infotype = "cinfo"
-	GeneralInfo infotype = "ginfo"
-)
-
-type Infotypes interface {
-	Infotype() infotype
-}
-
-func (b infotype) Infotype() infotype {
-	return b
+	return db.Collection("website-infos"), ctx
 }

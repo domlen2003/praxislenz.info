@@ -22,8 +22,8 @@ func main() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	//MongoDB
-	handlers.TestConnection()
+	//MONGO
+	handlers.StartMongoHandler()
 
 	//Gohtml Templates
 	tpl = template.Must(template.ParseGlob("templates/*.gohtml"))
@@ -59,7 +59,8 @@ type IndexContent struct {
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
-	data := IndexContent{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales elementum minon hendrerit. Proin tempor facilisis felis nec ultrices. Duis nec ultrices neque.Proin semper ultricies turpis, vel faucibus velit sodales vitae. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.", "Not A Real TimeStamp"}
+	cinfo := handlers.GetInfo(handlers.CoronaInfo)[0]
+	data := IndexContent{cinfo.Content, cinfo.Timestamp}
 	err := tpl.ExecuteTemplate(w, "index.gohtml", data)
 	if err != nil {
 		log.Fatal("Index: ", err)

@@ -54,18 +54,19 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		r.ParseForm()
 		if len(r.FormValue("contentType")) > 0 && len(r.FormValue("content")) > 0 {
-			fmt.Println("Typ: " + r.FormValue("contentType"))
-			values := strings.Split(strings.ReplaceAll(r.FormValue("content"), "\r\n", "\n"), "\n")
-			fmt.Printf("Values: %v\n", values)
-			fmt.Println(time.Now().Format("2.1.2006 15:04"))
+
+			UpdateInfo(InfoNode{
+				Type:      Infotype(r.FormValue("contentType")),
+				Content:   strings.ReplaceAll(r.FormValue("content"), "\r\n", "\n"),
+				Timestamp: time.Now().Format("2.1.2006 15:04"),
+			})
 		}
-		tpl.ExecuteTemplate(w, "settings.gohtml", indexSettings{ContentTypes: contentTypes, CurrentContent: "Current Content"})
+		tpl.ExecuteTemplate(w, "settings.gohtml", indexSettings{ContentTypes: contentTypes})
 	}
 }
 
 type indexSettings struct {
-	ContentTypes   []string
-	CurrentContent string
+	ContentTypes []string
 }
 
-var contentTypes = []string{"Corona Info", "Generelle Info"}
+var contentTypes = []string{string(CoronaInfo), string(GeneralInfo)}
