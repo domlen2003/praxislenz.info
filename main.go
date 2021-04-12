@@ -41,8 +41,14 @@ func main() {
 	}
 }
 
+type IndexContent struct {
+	CoronaContent   string
+	CoronaTimestamp string
+}
+
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
-	err := tpl.ExecuteTemplate(w, "index.gohtml", nil)
+	data := IndexContent{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales elementum minon hendrerit. Proin tempor facilisis felis nec ultrices. Duis nec ultrices neque.Proin semper ultricies turpis, vel faucibus velit sodales vitae. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.", "Not A Real TimeStamp"}
+	err := tpl.ExecuteTemplate(w, "index.gohtml", data)
 	if err != nil {
 		log.Fatal("Index: ", err)
 	}
