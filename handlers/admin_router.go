@@ -6,11 +6,13 @@ import (
 	"github.com/gorilla/sessions"
 	"html/template"
 	"net/http"
+	"os"
+	"strings"
+	"time"
 )
 
 var tpl *template.Template
-
-var store = sessions.NewCookieStore([]byte("secret")) //TODO: replace with os.Getenv("SESSION_KEY")
+var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
 
 func AddAdminRouter(r *mux.Router, t *template.Template) {
 	tpl = t
@@ -20,47 +22,21 @@ func AddAdminRouter(r *mux.Router, t *template.Template) {
 	r.HandleFunc("/settings", settingsHandler)
 }
 
-func settingsHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "session")
-	_, ok := session.Values["username"]
-	if !ok {
-		http.Redirect(w, r, "/", http.StatusFound)
-	} else {
-		data := struct {
-			CurrentTitle   string
-			CurrentContent string
-		}{"Corona Info",
-			"Aktuell blah blah übrig",
-		}
-		r.ParseForm()
-		if len(r.FormValue("title")) > 0 && len(r.FormValue("content")) > 0 {
-			fmt.Println(r.FormValue("title"))
-			fmt.Println(r.FormValue("content"))
-			tpl.ExecuteTemplate(w, "settings.gohtml", data)
-		} else {
-			tpl.ExecuteTemplate(w, "settings.gohtml", data)
-		}
-	}
-}
-
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	//redirect To Login Page
 	http.Redirect(w, r, r.URL.Path+"/login", http.StatusPermanentRedirect)
 }
-
 func loginHandler(w http.ResponseWriter, _ *http.Request) {
 	//Show Form for Login
 	tpl.ExecuteTemplate(w, "login.gohtml", nil)
 }
-
 func loginAuthHandler(w http.ResponseWriter, r *http.Request) {
-
 	r.ParseForm()
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	fmt.Println("Username: ", username, " Password: ", password)
 
-	if username != "Silvia Lenz" && password != "12345" { //TODO: replace with os.Getenv("PWD"), os.Getenv("USERNAME")
+	if username != os.Getenv("ADMIN_USERNAME") && password != os.Getenv("ADMIN_PASSWORD") {
 		tpl.ExecuteTemplate(w, "login.gohtml", "Username or Password wrong!")
 	} else {
 		session, _ := store.Get(r, "session")
@@ -69,3 +45,28 @@ func loginAuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin/settings", http.StatusPermanentRedirect)
 	}
 }
+
+func settingsHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session")
+	_, ok := session.Values["username"]
+	if !ok {
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		r.ParseForm()
+		if len(r.FormValue("contentType")) > 0 && len(r.FormValue("content")) > 0 {
+
+			UpdateInfo(InfoNode{
+				Type:      Infotype(r.FormValue("contentType")),
+				Content:   strings.ReplaceAll(r.FormValue("content"), "\r\n", "\n"),
+				Timestamp: time.Now().Format("2.1.2006 15:04"),
+			})
+		}
+		tpl.ExecuteTemplate(w, "settings.gohtml", indexSettings{ContentTypes: contentTypes})
+	}
+}
+
+type indexSettings struct {
+	ContentTypes []string
+}
+
+var contentTypes = []string{string(CoronaInfo), string(GeneralInfo)}

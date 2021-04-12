@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/justinas/alice"
 	"html/template"
 	"log"
@@ -15,6 +16,16 @@ import (
 var tpl *template.Template
 
 func main() {
+	//ENV
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	//MONGO
+	handlers.StartMongoHandler()
+
+	//Gohtml Templates
 	tpl = template.Must(template.ParseGlob("templates/*.gohtml"))
 
 	//Routing
@@ -23,19 +34,20 @@ func main() {
 	r.HandleFunc("/", indexHandler).Methods("GET")
 	r.NotFoundHandler = r.NewRoute().HandlerFunc(http.NotFound).GetHandler()
 
-	//Middleware
+	//Middleware and File-Server
 	errorChain := alice.New(middleware.LoggerHandler, middleware.RecoverHandler)
 	http.Handle("/", errorChain.Then(r))
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
-	// serve HTTPS!
+	// serve HTTPS
+	http.ListenAndServe(":80", nil)
 	server := &http.Server{
 		Addr:         ":8080",
 		ReadTimeout:  5 * time.Minute, // 5 min to allow for delays when 'curl' on OSx prompts for username/password
 		WriteTimeout: 10 * time.Second,
 		TLSConfig:    &tls.Config{ServerName: "praxislenz.info"},
 	}
-	err := server.ListenAndServeTLS(".pem", ".key")
+	err = server.ListenAndServeTLS(".pem", ".key")
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -47,7 +59,8 @@ type IndexContent struct {
 }
 
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
-	data := IndexContent{"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales elementum minon hendrerit. Proin tempor facilisis felis nec ultrices. Duis nec ultrices neque.Proin semper ultricies turpis, vel faucibus velit sodales vitae. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.", "Not A Real TimeStamp"}
+	cinfo := handlers.GetInfo(handlers.CoronaInfo)[0]
+	data := IndexContent{cinfo.Content, cinfo.Timestamp}
 	err := tpl.ExecuteTemplate(w, "index.gohtml", data)
 	if err != nil {
 		log.Fatal("Index: ", err)

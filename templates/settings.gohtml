@@ -2,18 +2,17 @@
 <body>
 <h2>Inhalt</h2><br>
 <form action="/admin/settings" method="POST">
-    <label for="title">Titel: </label><br>
-    <input type="text" id="title" name="title"
-            {{if .CurrentTitle}}
-                value="{{.CurrentTitle}}"
-            {{end }}
-    ><br>
+    <label for="contentType">Typ:</label>
+    <select name="contentType" id="contentType">
+        {{if .ContentTypes}}
+            {{range $val := .ContentTypes}}
+                <option value="{{$val}}">{{$val}}</option>
+            {{end}}
+        {{end }}
+    </select><br>
     <label for="content">Inhalt: </label><br>
-    <input type="text" id="content" name="content"
-            {{if .CurrentContent}}
-                value="{{.CurrentContent}}"
-            {{end }}
-    ><br><br>
+    <textarea id="content" name="content">Inhalt</textarea>
+    <br><br>
     <input type="submit" value="Ändern">
 </form>
 <br><br>
