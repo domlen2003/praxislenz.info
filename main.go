@@ -40,7 +40,6 @@ func main() {
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
 	// serve HTTPS
-	http.ListenAndServe(":80", nil)
 	server := &http.Server{
 		Addr:         ":8080",
 		ReadTimeout:  5 * time.Minute, // 5 min to allow for delays when 'curl' on OSx prompts for username/password
