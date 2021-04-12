@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"github.com/gorilla/mux"
 	"github.com/justinas/alice"
 	"html/template"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"praxislenz.info/handlers"
 	"praxislenz.info/middleware"
+	"time"
 )
 
 var tpl *template.Template
@@ -27,7 +29,13 @@ func main() {
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
 
 	// serve HTTPS!
-	err := http.ListenAndServeTLS(":8080", ".pem", ".key", nil)
+	server := &http.Server{
+		Addr:         ":8080",
+		ReadTimeout:  5 * time.Minute, // 5 min to allow for delays when 'curl' on OSx prompts for username/password
+		WriteTimeout: 10 * time.Second,
+		TLSConfig:    &tls.Config{ServerName: "praxislenz.info"},
+	}
+	err := server.ListenAndServeTLS(".pem", ".key")
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
