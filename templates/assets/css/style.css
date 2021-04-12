@@ -1,7 +1,7 @@
 .header {
     height: 25vh;
-    background: rgb(5,0,87);
-    background: linear-gradient(128deg, rgba(223,252,109,1) 0%, rgba(195,212,47,1) 70%, rgba(165,184,0,1) 100%);
+    background: rgb(5, 0, 87);
+    background: linear-gradient(128deg, rgba(223, 252, 109, 1) 0%, rgba(195, 212, 47, 1) 70%, rgba(165, 184, 0, 1) 100%);
 }
 
 .header-logo {
@@ -113,4 +113,36 @@
 
 .photo-details p {
     color: #010014;
+}
+
+footer {
+    text-align: center;
+    display: inline;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100px;
+    width: 100%;
+    overflow: hidden;
+}
+
+footer a {
+    color: var(--green);
+}
+
+footer a:hover {
+    color: var(--green-accent);
+}
+
+.credits-body li {
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.legal-body p {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.footer-body a {
+    color: var(--green) !important;
 }
