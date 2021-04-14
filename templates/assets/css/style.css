@@ -43,7 +43,6 @@
 }
 
 .photo-back {
-    background-image: url("../img/Corona_Info.svg");
     background-position: center;
     background-color: white;
     background-size: cover;
@@ -51,6 +50,15 @@
     border-top-right-radius: 10px;
     min-height: 250px;
 }
+
+.corona-photo{
+    background-image: url("../img/Corona_Info.svg");
+}
+
+.general-photo{
+    background-image: url("../img/General_Info.svg");
+}
+
 
 @media screen and (min-width: 700px) {
     .photo-back {
@@ -121,7 +129,6 @@ footer {
     position: absolute;
     left: 0;
     bottom: 0;
-    height: 100px;
     width: 100%;
     overflow: hidden;
 }
@@ -156,7 +163,7 @@ footer a:hover {
 }
 
 #sidebar-wrapper {
-    min-height: 100vh;
+    min-height: 75vh;
     margin-left: -15rem;
     -webkit-transition: margin .25s ease-out;
     -moz-transition: margin .25s ease-out;
