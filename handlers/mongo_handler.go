@@ -26,8 +26,9 @@ type InfoNode struct {
 type Infotype string
 
 const (
-	CoronaInfo  Infotype = "Corona Info"
-	GeneralInfo Infotype = "Generelle Info"
+	CoronaInfo   Infotype = "Corona Info"
+	GeneralInfo  Infotype = "Generelle Info"
+	OpeningHours Infotype = "Öffnungszeiten"
 )
 
 func StartMongoHandler() {

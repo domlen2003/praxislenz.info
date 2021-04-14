@@ -38,7 +38,8 @@ func main() {
 	errorChain := alice.New(middleware.LoggerHandler, middleware.RecoverHandler)
 	http.Handle("/", errorChain.Then(r))
 	http.Handle("/assets/", errorChain.Then(http.StripPrefix("/assets", http.FileServer(http.Dir("./templates/assets")))))
-	http.ListenAndServe(":80", nil)
+	http.Handle("/files/", errorChain.Then(http.StripPrefix("/files", http.FileServer(http.Dir("./templates/files")))))
+
 	// serve HTTPS
 	server := &http.Server{
 		Addr:         ":8080",
@@ -57,16 +58,19 @@ type IndexContent struct {
 	CoronaTimestamp  string
 	GeneralContent   string
 	GeneralTimestamp string
+	OpeningHours     string
 }
 
 //indexHandler renders the index of the page with the according information from mongodb/cache
 func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	cinfo := handlers.GetInfo(handlers.CoronaInfo)[0]
 	ginfo := handlers.GetInfo(handlers.GeneralInfo)[0]
+	oinfo := handlers.GetInfo(handlers.OpeningHours)[0]
 	data := IndexContent{cinfo.Content,
 		cinfo.Timestamp,
 		ginfo.Content,
 		ginfo.Timestamp,
+		oinfo.Content,
 	}
 	err := tpl.ExecuteTemplate(w, "index.gohtml", data)
 	if err != nil {

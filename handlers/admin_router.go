@@ -73,4 +73,4 @@ type indexSettings struct {
 	ContentTypes []string
 }
 
-var contentTypes = []string{string(CoronaInfo), string(GeneralInfo)}
+var contentTypes = []string{string(CoronaInfo), string(GeneralInfo), string(OpeningHours)}
