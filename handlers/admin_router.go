@@ -59,9 +59,10 @@ func settingsHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		r.ParseForm()
 		if len(r.FormValue("contentType")) > 0 && len(r.FormValue("content")) > 0 {
+			replacer := strings.NewReplacer("\r\n", "<br>", "\n", "<br>")
 			UpdateInfo(InfoNode{
 				Type:      Infotype(r.FormValue("contentType")),
-				Content:   strings.ReplaceAll(r.FormValue("content"), "\r\n", "\n"),
+				Content:   replacer.Replace(r.FormValue("content")),
 				Timestamp: time.Now().Format("2.1.2006 15:04"),
 			})
 		}

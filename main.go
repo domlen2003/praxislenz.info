@@ -25,7 +25,7 @@ func main() {
 	//MONGO
 	handlers.StartMongoHandler()
 
-	//Gohtml Templates
+	//Gohtml Template loading
 	tpl = template.Must(template.ParseGlob("templates/*.gohtml"))
 
 	//Routing
@@ -53,12 +53,13 @@ func main() {
 	}
 }
 
+// IndexContent defining the struct of the index content (template.HTML is used for capability of newlines)
 type IndexContent struct {
-	CoronaContent    string
+	CoronaContent    template.HTML
 	CoronaTimestamp  string
-	GeneralContent   string
+	GeneralContent   template.HTML
 	GeneralTimestamp string
-	OpeningHours     string
+	OpeningHours     template.HTML
 }
 
 //indexHandler renders the index of the page with the according information from mongodb/cache
@@ -66,12 +67,15 @@ func indexHandler(w http.ResponseWriter, _ *http.Request) {
 	cinfo := handlers.GetInfo(handlers.CoronaInfo)[0]
 	ginfo := handlers.GetInfo(handlers.GeneralInfo)[0]
 	oinfo := handlers.GetInfo(handlers.OpeningHours)[0]
-	data := IndexContent{cinfo.Content,
+	data := IndexContent{
+		template.HTML(cinfo.Content),
 		cinfo.Timestamp,
-		ginfo.Content,
+		template.HTML(ginfo.Content),
 		ginfo.Timestamp,
-		oinfo.Content,
+		template.HTML(oinfo.Content),
 	}
+
+	// Executing the template
 	err := tpl.ExecuteTemplate(w, "index.gohtml", data)
 	if err != nil {
 		log.Fatal("Index: ", err)
