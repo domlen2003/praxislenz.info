@@ -8,12 +8,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"net/url"
 	"os"
 	"time"
 )
 
-var mongoClient *mongo.Client
 var cacheValid = make(map[Infotype]bool)
 var cache = make(map[Infotype][]InfoNode)
 
@@ -36,7 +34,7 @@ func StartMongoHandler() {
 	//falls durch äußeren Eingriff der Cache nicht mehr gültig sein sollte
 	go func() {
 		for true {
-			for key, _ := range cacheValid {
+			for key := range cacheValid {
 				cacheValid[key] = false
 			}
 			fmt.Println("Cache invalidated")
@@ -117,7 +115,11 @@ func GetInfo(itype Infotype) []InfoNode {
 //returns a short lived connection to the Website-Infos Collection
 func getInfoCollection() (*mongo.Collection, context.Context) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://praxislenz:"+url.QueryEscape(os.Getenv("MONGO_PASSWORD"))+"@202.61.250.84:42069/?authSource=praxislenz"))
+	clientOptions := options.Client().ApplyURI("mongodb://202.61.250.84:42069").
+		SetAuth(options.Credential{
+			AuthSource: "praxislenz", Username: "praxislenz", Password: os.Getenv("MONGO_PASSWORD"),
+		})
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
 		log.Fatal("ClientConnect: ", err)
 	}
