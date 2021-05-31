@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +8,17 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
 
-    <title>Home | Praxis-Lenz</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/icons/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/icons/site.webmanifest">
+    <link rel="mask-icon" href="/assets/img/icons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/assets/img/icons/favicon.ico">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="/assets/img/icons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>Home | Praxis Dr. Lenz</title>
 </head>
 <body>
 <main>
@@ -24,7 +34,9 @@
             <div class="list-group list-group-flush" style="padding-left: 2%;padding-right: 2%">
                 <p>Silvia Lenz<br/>
                     Erlenweg 14<br/>
-                    52223 Stolberg</p>
+                    52223 Stolberg<br/>
+                    +49 2402 27514
+                </p>
             </div>
             <div class="sidebar-heading">Öffnungszeiten</div>
             <div class="list-group list-group-flush" style="padding-left: 2%;padding-right: 2%">
@@ -38,11 +50,6 @@
         <div id="page-content-wrapper">
             <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                 <button class="btn" id="menu-toggle"><span class="navbar-toggler-icon"></span></button>
-                {{/*                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>*/}}
             </nav>
             <section class="news">
                 <div class="container">
@@ -57,8 +64,22 @@
                         <div class="photo-card">
                             <div class="photo-back corona-photo"></div>
                             <div class="photo-details">
-                                <h1>Corona Infos</h1>
+                                <h2>Corona Infos</h2>
                                 <p>{{.CoronaContent}}</p>
+
+                                <p>
+                                    <u><b>Dateien mRNA-Impfstoff</b></u><br>
+                                    <a type="link"
+                                       href="https://www.rki.de/DE/Content/Infekt/Impfen/Materialien/Downloads-COVID-19/Aufklaerungsbogen-de.pdf?__blob=publicationFile">Aufklärungsbogen</a><br>
+                                    <a type="link"
+                                       href="https://www.rki.de/DE/Content/Infekt/Impfen/Materialien/Downloads-COVID-19/Einwilligung-de.pdf?__blob=publicationFile">Einwilligung</a><br><br>
+                                    <u><b>Dateien Vektorimpfstoff</b></u><br>
+                                    <a type="link"
+                                       href="https://www.rki.de/DE/Content/Infekt/Impfen/Materialien/Downloads-COVID-19-Vektorimpfstoff/Aufklaerungsbogen-de.pdf?__blob=publicationFile">Aufklärungsbogen</a><br>
+                                    <a type="link"
+                                       href="https://www.rki.de/DE/Content/Infekt/Impfen/Materialien/Downloads-COVID-19-Vektorimpfstoff/Einwilligung-de.pdf?__blob=publicationFile">Einwilligung</a><br>
+                                </p>
+
                                 <div class="photo-tags">
                                     <ul>
                                         <li>Last edit: {{.CoronaTimestamp}}</li>
@@ -72,7 +93,7 @@
                         <div class="photo-card">
                             <div class="photo-back general-photo"></div>
                             <div class="photo-details">
-                                <h1>Generelle Infos</h1>
+                                <h2>Generelle Infos</h2>
                                 <p>{{.GeneralContent}}</p>
                                 <div class="photo-tags">
                                     <ul>
