@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"html"
 	"log"
 	"os"
 	"time"
@@ -115,9 +116,9 @@ func GetInfo(itype Infotype) []InfoNode {
 //returns a short lived connection to the Website-Infos Collection
 func getInfoCollection() (*mongo.Collection, context.Context) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	clientOptions := options.Client().ApplyURI("mongodb://202.61.250.84:42069").
+	clientOptions := options.Client().ApplyURI("mongodb://93.177.67.36:27017").
 		SetAuth(options.Credential{
-			AuthSource: "praxislenz", Username: "praxislenz", Password: os.Getenv("MONGO_PASSWORD"),
+			AuthSource: "test", Username: "praxislenz", Password: html.EscapeString(os.Getenv("MONGO_PASSWORD")),
 		})
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
