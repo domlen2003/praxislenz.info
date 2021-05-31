@@ -117,7 +117,7 @@ func GetInfo(itype Infotype) []InfoNode {
 //returns a short lived connection to the Website-Infos Collection
 func getInfoCollection() (*mongo.Collection, context.Context) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://praxislenz:"+url.QueryEscape(os.Getenv("MONGO_PASSWORD"))+"@202.61.250.84:42069/?authSource=praxislenz"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://praxislenz:"+url.QueryEscape(os.Getenv("MONGO_PASSWORD"))+"@127.0.0.1:27017/?authSource=praxislenz"))
 	if err != nil {
 		log.Fatal("ClientConnect: ", err)
 	}
