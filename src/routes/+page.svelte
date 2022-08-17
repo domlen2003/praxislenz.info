@@ -14,8 +14,8 @@
             </div>
         </div>
         <div class="pl-1 pt-1 h-auto text-green-200 justify-items-start font-mono text-xs leading-loose truncate tracking-normal bg-black" id="console">
-            <p class="pb-1">Beep Boop </p>
-            <p class="pb-1 whitespace-normal"> Diese Seite befindet sich gerade im Umbau</p>
+            <p class="pb-1">--Was ist hier passiert?</p>
+            <p class="pb-1 whitespace-normal">Diese Seite befindet sich gerade im Umbau!</p>
             <div class="text-justify inline-block">
                 <p class="typed truncate text-clip h-5 whitespace-nowrap border-r-2 border-r-orange-400"> Sieh dir das Projekt an:
                     <a class="underline" href="https://github.com/domlen2003/praxislenz.info">Github</a>
